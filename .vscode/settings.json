@@ -100,5 +100,6 @@
   "githubIssues.issueCompletions.enabled": false,
   "githubIssues.userCompletions.enabled": false,
   "githubPullRequests.codingAgent.autoCommitAndPush": true,
+  "github.copilot.chat.agent.autoFix": false,
 
 }
