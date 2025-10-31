@@ -11,8 +11,9 @@ import * as Util from "./util.js";
 
 // Code that runs over and over again
 function loop() {
-
-  window.requestAnimationFrame(loop);
+ Util.setPosition(0.5, 0.5);
+ Util.setColour(0,50,50,1);
+ window.requestAnimationFrame(loop);
 }
 
 // Setup is run once, at the start of the program. It sets everything up for us!
