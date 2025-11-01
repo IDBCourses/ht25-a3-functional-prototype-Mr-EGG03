@@ -7,8 +7,10 @@ import * as Util from "./util.js";
 
 // State variables are the parts of your program that change over time.
 let Input = [];
+let prevW = null;
+let currW = null;
 let mines = [];
-
+let yGrid = [0.01,0.3,0.35,0.6,0.5,0.9,0.7,0.8,0.45,0,19];
 let size = 100;
 let width = 50;
 let deg = 0;
@@ -17,9 +19,12 @@ let currY = 0;
 let newX = 0; 
 let newY = 0; 
 let momentom = 0.01; 
+let timeoutID = null; 
 // Settings variables should contain all of the "fixed" parts of your programs
 const fullAhead = 0.005;
 const astern = 0.0025;
+const Wheel = ["KeyT","KeyF","KeyV",
+              "KeyU","KeyJ","KeyN"];
 //Functions 
 function reset ( ){
   // window.location.reload(true); 
@@ -116,6 +121,28 @@ function backward (){
  }
 }
 
+function swipeDirection(){
+  let prevIndex = Wheel.indexOf(prevW);
+  let currIndex = Wheel.indexOf(currW);
+
+  console.log(`${prevIndex} -> ${currIndex}`);
+
+  if( currIndex < 0 || prevIndex < 0){
+    return 0;
+  } else {
+    let dIndex = currIndex - prevIndex;
+  
+    if(dIndex > 1 || dIndex < -1){
+      return 0;
+    } else {
+      return dIndex;
+    }
+  }
+}
+function resetWheel(){
+  prevW = null;
+  currW = null;
+}
 function isColliding(el1, el2) { // !
   const rect1 = el1.getBoundingClientRect();
   const rect2 = el2.getBoundingClientRect();
@@ -136,7 +163,7 @@ function layMines (m){
    mines.push ({
     element: mine, 
     x: Math.random(),
-    y: Math.random(),
+    y: yGrid [i],
     width: 50, hight: 50, 
     r: 1, 
     h: 200, s: 20, l: 35, a:1 
@@ -177,6 +204,8 @@ console.log(`x: ${currX} , y: ${currY}`)
       console.log("Hit mine!");
       mine.element.remove();      // remove from DOM
       mines.splice(i, 1);         // remove from array
+      newX = currX; 
+      newY = currY;
     }
   }
 
@@ -190,35 +219,37 @@ if (currX > 1){
 // Setup is run once, at the start of the program. It sets everything up for us!
 function setup() {
 
-  layMines(6);
+  layMines(10);
   for (const mine of mines){
   const {element,x,y,width, hight, r, h, s, l, a } = mine
   Util.setPosition(x,y,element);
   Util.setSize(hight, width, element);
   Util.setColour(h, s, l, a, element);
   Util.setRoundedness(r)
-
-  if (newX*innerWidth === (x*innerWidth)+ width/2){
-  console.log( "Hit!" )
-  }
   }
  
 
   // Put your event listener code here
 document.addEventListener("keydown",(event) => {
+  clearTimeout(timeoutID);
   if (!event.repeat){ //? still invanitly spins 
  Input.push (event.code); 
   }
-  if (Input.includes("KeyT")) {//here so that it only runs once per button press
+  prevW = currW; 
+  currW = event.code;
+
+  let turn = swipeDirection();
+  deg += turn* 45
+/*   if (Input.includes("KeyT")) {//here so that it only runs once per button press
    deg -= 45;  
   }
   if (Input.includes("KeyU")) {//here so that it only runs once per button press
    deg += 45;  
-  }
+  } */
 });
 document.addEventListener("keyup",(event) => {
   Input.splice (Input.indexOf(event.code), 1 );
-  
+  timeoutID = setTimeout(resetWheel(), 10000);
 });
 
   window.requestAnimationFrame(loop);
