@@ -7,6 +7,11 @@ import * as Util from "./util.js";
 
 // State variables are the parts of your program that change over time.
 let Input = [];
+
+let obj = {
+  x : Math.random(), y : 0.5, width: 50, hight: 50, r: 1, h: 200, s: 20, l: 35, a:1    
+}
+
 let size = 100;
 let width = 50;
 let deg = 0;
@@ -37,27 +42,38 @@ function lineY (){
 function move (start, line, M){
  return start + line * M;
 }
+
 function forward (){
-if ( deg === 0){
+ if ( deg === 0){
  newX += fullAhead; 
-}
+ }
 
- if (deg === 15 || deg === -345){
- newX += fullAhead;
-
-} 
-
-if ( deg === -90 || deg === 270){
+ if ( deg === -90 || deg === 270){
  newY -= fullAhead;
-}
+ }
 
-if ( deg === 90 || deg === -270){
+ if ( deg === 90 || deg === -270){
  newY += fullAhead;
-}
-
-if ( Math.abs(deg) === 180){
+ }
+ if ( deg === -45 || deg === 315){
+  newX += fullAhead;
+  newY -= fullAhead;
+ }
+ if ( deg === 45 || deg === -315){
+  newX += fullAhead;
+  newY += fullAhead;
+ } 
+ if ( deg === 135 || deg === -225){
+  newX -= fullAhead;
+  newY += fullAhead;
+ }
+ if ( deg === -135 || deg === 225){
+  newX -= fullAhead;
+  newY -= fullAhead;
+ }
+ if ( Math.abs(deg) === 180){
  newX -= fullAhead;
-}
+ }
 
 }
 
@@ -65,9 +81,46 @@ function backward (){
  if (deg === 0) {
   newX -= astern;
  }
+ if ( deg === -90 || deg === 270){
+ newY += astern;
+ }
+
+ if ( deg === 90 || deg === -270){
+ newY -= astern;
+ }
+ if ( deg === -45 || deg === 315){
+  newX -= astern;
+  newY += astern;
+ }
+ if ( deg === 45 || deg === -315){
+  newX -= astern;
+  newY -= astern;
+ } 
+ if ( deg === 135 || deg === -225){
+  newX += astern;
+  newY -= astern;
+ }
+ if ( deg === -135 || deg === 225){
+  newX += astern;
+  newY += astern;
+ }
+ if ( Math.abs(deg) === 180){
+ newX += astern;
+ }
 }
 
 Util.setSize(size,width);
+
+const mine1 = Util.createThing("mine1", "thing");
+function layMines (obj , name ){
+  const {x,y,width, hight, r, h, s, l, a } = obj
+  Util.setPosition(x,y,name);
+  Util.setSize(hight, width, name);
+  Util.setColour(h, s, l, a, name);
+  Util.setRoundedness(r)
+ 
+}
+
 // Code that runs over and over again
 function loop() {
  if (Input.includes("KeyY")){
@@ -106,16 +159,21 @@ console.log(`x: ${currX*innerWidth} , y: ${currY*innerHeight}`)
 
 // Setup is run once, at the start of the program. It sets everything up for us!
 function setup() {
+
+ layMines(obj, mine1 );
+
+ 
+
   // Put your event listener code here
 document.addEventListener("keydown",(event) => {
   if (!event.repeat){ //? still invanitly spins 
  Input.push (event.code); 
   }
   if (Input.includes("KeyT")) {//here so that it only runs once per button press
-   deg -= 15;  
+   deg -= 45;  
   }
   if (Input.includes("KeyU")) {//here so that it only runs once per button press
-   deg += 15;  
+   deg += 45;  
   }
 });
 document.addEventListener("keyup",(event) => {
