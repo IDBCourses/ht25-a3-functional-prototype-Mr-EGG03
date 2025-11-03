@@ -7,10 +7,13 @@ import * as Util from "./util.js";
 
 // State variables are the parts of your program that change over time.
 let Input = [];
-let prevW = null;
-let currW = null;
+let prevWL = null;
+let currWL = null;
+let prevWR = null;
+let currWR = null;
 let mines = [];
 let yGrid = [0.01,0.3,0.35,0.6,0.5,0.9,0.7,0.8,0.45,0,19];
+let lives = 3 
 let size = 100;
 let width = 50;
 let deg = 0;
@@ -23,8 +26,8 @@ let timeoutID = null;
 // Settings variables should contain all of the "fixed" parts of your programs
 const fullAhead = 0.005;
 const astern = 0.0025;
-const Wheel = ["KeyT","KeyF","KeyV",
-              "KeyU","KeyJ","KeyN"];
+const WheelL = ["KeyT","KeyG","KeyV"]
+const WheelR = ["KeyU","KeyJ","KeyN"];
 //Functions 
 function reset ( ){
   // window.location.reload(true); 
@@ -121,9 +124,27 @@ function backward (){
  }
 }
 
-function swipeDirection(){
-  let prevIndex = Wheel.indexOf(prevW);
-  let currIndex = Wheel.indexOf(currW);
+function swipeLeftSide(){
+  let prevIndex = WheelL.indexOf(prevWL);
+  let currIndex = WheelL.indexOf(currWL);
+
+  console.log(`${prevIndex} -> ${currIndex}`);
+
+  if( currIndex < 0 || prevIndex < 0){
+    return 0;
+  } else {
+    let dIndex = currIndex - prevIndex;
+  
+    if(dIndex > 1 || dIndex < -1){
+      return 0;
+    } else {
+      return dIndex;
+    }
+  }
+}
+function swipeRightSide(){
+  let prevIndex = WheelR.indexOf(prevWR);
+  let currIndex = WheelR.indexOf(currWR);
 
   console.log(`${prevIndex} -> ${currIndex}`);
 
@@ -140,8 +161,10 @@ function swipeDirection(){
   }
 }
 function resetWheel(){
-  prevW = null;
-  currW = null;
+  prevWL = null;
+  currWL = null;
+  prevWR = null;
+  currWR = null; 
 }
 function isColliding(el1, el2) { // !
   const rect1 = el1.getBoundingClientRect();
@@ -189,7 +212,7 @@ function loop() {
   currX = move(currX,lineX(), momentom);
   currY = move(currY,lineY(), momentom);
  Util.setPosition(currX,currY);
-
+console.log(lives)
 console.log(`x: ${currX} , y: ${currY}`)
   if (deg === 360 || deg === -360) {
     deg = 0; 
@@ -206,12 +229,13 @@ console.log(`x: ${currX} , y: ${currY}`)
       mines.splice(i, 1);         // remove from array
       newX = currX; 
       newY = currY;
+      lives -- 
     }
   }
-
-if (currX > 1){
+if (currX > 1 || lives === 0){
   reset();
 } 
+console.log(Input) 
  //updateWindow() 
   window.requestAnimationFrame(loop);
 }
@@ -231,15 +255,27 @@ function setup() {
 
   // Put your event listener code here
 document.addEventListener("keydown",(event) => {
-  clearTimeout(timeoutID);
-  if (!event.repeat){ //? still invanitly spins 
+  //clearTimeout(timeoutID);
+  //if (!event.repeat){ //? still invanitly spins //? is my Y key stuck or is !repeat needed
  Input.push (event.code); 
-  }
-  prevW = currW; 
-  currW = event.code;
+  //}
 
-  let turn = swipeDirection();
-  deg += turn* 45
+  //should turning only be avalible when moving ? 
+  if (Input.includes("KeyT") || Input.includes("KeyG") || Input.includes("KeyV")){// improved slightly after using G instead of F 
+  prevWL = currWL; 
+  currWL = event.code;
+  let turn = swipeLeftSide();
+  deg += turn* -45;
+   clearTimeout(timeoutID);
+  }
+  if (Input.includes("KeyU") || Input.includes("KeyJ") || Input.includes("KeyN")){
+  prevWR = currWR; 
+  currWR = event.code;
+
+  let turn = swipeRightSide();
+  deg += turn* 45;
+   clearTimeout(timeoutID);
+  }
 /*   if (Input.includes("KeyT")) {//here so that it only runs once per button press
    deg -= 45;  
   }
@@ -249,7 +285,7 @@ document.addEventListener("keydown",(event) => {
 });
 document.addEventListener("keyup",(event) => {
   Input.splice (Input.indexOf(event.code), 1 );
-  timeoutID = setTimeout(resetWheel(), 10000);
+  timeoutID = setTimeout(resetWheel(), 100000);
 });
 
   window.requestAnimationFrame(loop);
