@@ -12,7 +12,7 @@ import * as Util from "./util.js";
 // Code that runs over and over again
 function loop() {
  Util.setPosition(0.5, 0.5);
- Util.setColour(0,50,50,1);
+
  window.requestAnimationFrame(loop);
 }
 

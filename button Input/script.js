@@ -12,8 +12,9 @@ let currWL = null;
 let prevWR = null;
 let currWR = null;
 let mines = [];
-let yGrid = [0.01,0.3,0.35,0.6,0.5,0.9,0.7,0.8,0.45,0,19];
-let lives = 3 
+let yGrid = [0.01,0.1,0.3,0.35,0.6,0.5,0.9,0.7,0.8,0.45,0.9,0.01,0.1,0.3,0.35,0.6,0.5,0.9,0.7,0.8,0.45,0.9];
+let mineCount = yGrid.length
+let lives = 3;
 let size = 100;
 let width = 50;
 let deg = 0;
@@ -21,37 +22,41 @@ let currX = 0;
 let currY = 0;
 let newX = 0; 
 let newY = 0; 
-let momentom = 0.01; 
+let momentum = 0.01; 
 let timeoutID = null; 
 // Settings variables should contain all of the "fixed" parts of your programs
 const fullAhead = 0.005;
 const astern = 0.0025;
-const WheelL = ["KeyT","KeyG","KeyV"]
+const WheelL = ["KeyT","KeyF","KeyV"];
 const WheelR = ["KeyU","KeyJ","KeyN"];
 //Functions 
+Util.setSize(size,width);
+
 function reset ( ){
-  // window.location.reload(true); 
   console.log ("reset");
+ for (const mine of mines){
+  const {element } = mine
+ Util.setColour(0,100,50,0.1,element)
+ }
+ Util.setSize(size+28,width+25);
+ thing.remove()
  }
 
  function lineX (){
-/*   if (newX < 0){
+  if (newX < -0.1){
   newX = 0 
-  }  */
+  }  
   return newX - currX; 
-
 }
 
 function lineY (){ 
-/*   if (newY < 0 || newY > 1){
+  if (newY < -0.1){
  newY = 0 
-  } */
+  } 
+if (newY > 1.08){
+  newY = 1
+}
  return newY - currY; 
-
-/* if (Input.includes("KeyY") && deg === 15 || deg === -345){ 
-  return (lineX () * (2-Math.sqrt(3)));
-  }
-  */
 }
 
 function move (start, line, M){
@@ -134,7 +139,6 @@ function swipeLeftSide(){
     return 0;
   } else {
     let dIndex = currIndex - prevIndex;
-  
     if(dIndex > 1 || dIndex < -1){
       return 0;
     } else {
@@ -178,7 +182,6 @@ function isColliding(el1, el2) { // !
   );
 }
 
-Util.setSize(size,width);
 
 function layMines (m){
   for (let i= 0; i < m; i++){
@@ -188,7 +191,7 @@ function layMines (m){
     x: Math.random(),
     y: yGrid [i],
     width: 50, hight: 50, 
-    r: 1, 
+    r: 0.1, 
     h: 200, s: 20, l: 35, a:1 
    })
   }
@@ -205,12 +208,9 @@ function loop() {
  console.log("back");
  }
  console.log(deg);
- if (Input.includes("KeyH")){ // does this break the game 
-  newX = currX; 
-  newY = currY;
- }
-  currX = move(currX,lineX(), momentom);
-  currY = move(currY,lineY(), momentom);
+
+  currX = move(currX,lineX(), momentum);
+  currY = move(currY,lineY(), momentum);
  Util.setPosition(currX,currY);
 console.log(lives)
 console.log(`x: ${currX} , y: ${currY}`)
@@ -243,29 +243,28 @@ console.log(Input)
 // Setup is run once, at the start of the program. It sets everything up for us!
 function setup() {
 
-  layMines(10);
+  layMines(mineCount);
   for (const mine of mines){
   const {element,x,y,width, hight, r, h, s, l, a } = mine
   Util.setPosition(x,y,element);
   Util.setSize(hight, width, element);
   Util.setColour(h, s, l, a, element);
-  Util.setRoundedness(r)
+  Util.setRoundedness(r,element)
   }
  
 
   // Put your event listener code here
 document.addEventListener("keydown",(event) => {
-  //clearTimeout(timeoutID);
-  //if (!event.repeat){ //? still invanitly spins //? is my Y key stuck or is !repeat needed
+  if (!event.repeat){ 
  Input.push (event.code); 
-  //}
+  }
 
   //should turning only be avalible when moving ? 
-  if (Input.includes("KeyT") || Input.includes("KeyG") || Input.includes("KeyV")){// improved slightly after using G instead of F 
+  if (Input.includes("KeyT") || Input.includes("KeyF") || Input.includes("KeyV")){// improved slightly after using G instead of F? 
   prevWL = currWL; 
   currWL = event.code;
   let turn = swipeLeftSide();
-  deg += turn* -45;
+  deg -= turn* 45;
    clearTimeout(timeoutID);
   }
   if (Input.includes("KeyU") || Input.includes("KeyJ") || Input.includes("KeyN")){
@@ -276,16 +275,14 @@ document.addEventListener("keydown",(event) => {
   deg += turn* 45;
    clearTimeout(timeoutID);
   }
-/*   if (Input.includes("KeyT")) {//here so that it only runs once per button press
-   deg -= 45;  
-  }
-  if (Input.includes("KeyU")) {//here so that it only runs once per button press
-   deg += 45;  
-  } */
+  if (currX > 1 || lives === 0){
+  reset();
+} 
 });
+
 document.addEventListener("keyup",(event) => {
   Input.splice (Input.indexOf(event.code), 1 );
-  timeoutID = setTimeout(resetWheel(), 100000);
+  timeoutID = setTimeout(resetWheel, 100);
 });
 
   window.requestAnimationFrame(loop);
@@ -293,3 +290,7 @@ document.addEventListener("keyup",(event) => {
 
 
 setup(); // Always remember to call setup()!
+
+/*problems:
+the window size increases when element thing goes straight down... or is a exploit? 
+*/

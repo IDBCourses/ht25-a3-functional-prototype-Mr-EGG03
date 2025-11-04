@@ -2,6 +2,10 @@
     width: 100px;
     height: 100px;
     background-color: rgb(255, 20, 71);
+    /* background-color: rgb(97, 110, 118); the ideal look for the Sub 
+    border-color: rgb(236, 7, 7);
+    border-width:   8px 5px 8px 18px;
+    border-style: solid; */
     position: absolute;
     border-radius: 50%;
     transform-origin: 50%, 50% ;
@@ -20,6 +24,7 @@ body {
     padding: 0;
     line-height: inherit;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: rgba(4, 211, 247, 0.826);
 }
 
 #sample-output {

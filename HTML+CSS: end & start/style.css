@@ -1,9 +1,12 @@
 .thing {
     width: 100px;
-    height: 100px;
-    background-color: deeppink;
+    height: 50px;
+    background-color: rgb(97, 110, 118);
+    border-color: rgb(236, 7, 7);
+    border-width:   8px 5px 8px 18px;
+    border-style: solid;
     position: absolute;
-    border-radius: 50%;
+    border-radius: 50%; 
 }
 
 /* Prevent padding and border from affecting element width. */

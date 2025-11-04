@@ -101,5 +101,6 @@
   "githubIssues.userCompletions.enabled": false,
   "githubPullRequests.codingAgent.autoCommitAndPush": true,
   "github.copilot.chat.agent.autoFix": false,
+  "livePreview.defaultPreviewPath": "/button Input/index.html",
 
 }
